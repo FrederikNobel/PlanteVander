@@ -5,28 +5,40 @@ import { useRouter } from "next/navigation";
 import MoistureChart from "../components/MoistureChart";
 import SettingsPanel from "../components/SettingsPanel";
 
-// Mock data for demonstration until Google Sheets API is hooked up
-const MOCK_DATA = Array.from({ length: 24 }).map((_, i) => {
-  const d = new Date();
-  d.setHours(d.getHours() - (23 - i));
-  return {
-    time: d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    value: Math.max(20, Math.min(100, 60 + Math.sin(i / 3) * 30 + (Math.random() * 10 - 5)))
-  };
-});
-
 export default function Dashboard() {
-  const [data, setData] = useState(MOCK_DATA);
+  const [data, setData] = useState([]);
   const [currentMoisture, setCurrentMoisture] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
-    // Simulate fetching data
-    setTimeout(() => {
-      setCurrentMoisture(Math.round(MOCK_DATA[MOCK_DATA.length - 1].value));
-      setIsLoading(false);
-    }, 1000);
+    const fetchData = async () => {
+      try {
+        const res = await fetch('/api/sheets');
+        if (!res.ok) throw new Error('Failed to fetch data');
+        const sheetData = await res.json();
+        
+        if (sheetData && sheetData.length > 0) {
+          // Keep only the last 24 entries for the chart
+          const recentData = sheetData.slice(-24);
+          setData(recentData);
+          setCurrentMoisture(recentData[recentData.length - 1].value);
+        } else {
+          setError('No data found in the spreadsheet.');
+        }
+      } catch (err) {
+        console.error(err);
+        setError('Error loading data. Make sure the Google App Script is updated.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+    // Refresh data every 5 minutes
+    const interval = setInterval(fetchData, 5 * 60 * 1000);
+    return () => clearInterval(interval);
   }, []);
 
   const handleLogout = async () => {
@@ -44,6 +56,17 @@ export default function Dashboard() {
     return (
       <div className="flex-center" style={{ minHeight: "100vh" }}>
         <div className="text-gradient" style={{ fontSize: "1.5rem", fontWeight: "bold" }}>Loading Dashboard...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex-center" style={{ minHeight: "100vh", flexDirection: "column", gap: "20px" }}>
+        <div style={{ color: "var(--danger-red)", fontSize: "1.2rem", textAlign: "center", background: "rgba(248, 81, 73, 0.1)", padding: "20px", borderRadius: "12px", maxWidth: "500px" }}>
+          <p>{error}</p>
+        </div>
+        <button className="btn-primary" onClick={() => window.location.reload()}>Try Again</button>
       </div>
     );
   }
