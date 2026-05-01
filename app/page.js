@@ -136,7 +136,7 @@ export default function Dashboard() {
 
         <div className="glass-panel">
           <h2 style={{ marginBottom: "16px", fontSize: "1.2rem" }}>Moisture History (Last 24h)</h2>
-          <MoistureChart data={data} />
+          <MoistureChart data={data} threshold={savedHysteresis} />
         </div>
       </div>
 
