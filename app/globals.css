@@ -8,6 +8,8 @@
   --primary-green-glow: rgba(46, 160, 67, 0.4);
   --accent-blue: #58a6ff;
   --danger-red: #f85149;
+  --warning-yellow: #d29922;
+  --warning-yellow-glow: rgba(210, 153, 34, 0.4);
   --font-sans: var(--font-geist-sans), Arial, Helvetica, sans-serif;
   --font-mono: var(--font-geist-mono), monospace;
 }

@@ -94,6 +94,20 @@ export default function Dashboard() {
     );
   }
 
+  let moistureStatusColor = "var(--primary-green)";
+  let moistureStatusGlow = "0 0 20px rgba(46, 160, 67, 0.4)";
+  let moistureStatusText = "Optimal conditions";
+
+  if (currentMoisture <= savedHysteresis) {
+    moistureStatusColor = "var(--danger-red)";
+    moistureStatusGlow = "0 0 20px rgba(248, 81, 73, 0.4)";
+    moistureStatusText = "Needs watering!";
+  } else if (currentMoisture <= savedHysteresis + 10) {
+    moistureStatusColor = "var(--warning-yellow)";
+    moistureStatusGlow = "0 0 20px var(--warning-yellow-glow)";
+    moistureStatusText = "Needs watering soon!";
+  }
+
   return (
     <main className="container animate-fade-in">
       <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "40px" }}>
@@ -110,13 +124,13 @@ export default function Dashboard() {
           <div style={{ 
             fontSize: "4rem", 
             fontWeight: "bold", 
-            color: currentMoisture <= savedHysteresis ? "var(--danger-red)" : "var(--primary-green)",
-            textShadow: currentMoisture <= savedHysteresis ? "0 0 20px rgba(248, 81, 73, 0.4)" : "0 0 20px rgba(46, 160, 67, 0.4)"
+            color: moistureStatusColor,
+            textShadow: moistureStatusGlow
           }}>
             {currentMoisture}%
           </div>
-          <p style={{ marginTop: "16px", fontWeight: "500" }}>
-            {currentMoisture <= savedHysteresis ? "Needs Watering soon!" : "Optimal conditions"}
+          <p style={{ marginTop: "16px", fontWeight: "500", color: moistureStatusColor }}>
+            {moistureStatusText}
           </p>
         </div>
 
