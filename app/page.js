@@ -50,9 +50,13 @@ export default function Dashboard() {
   }, []);
 
   const handleLogout = async () => {
-    // To logout, we clear the cookie. For a full implementation, we'd have a logout API route.
-    document.cookie = "auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    router.push("/login");
+    try {
+      await fetch('/api/logout', { method: 'POST' });
+      router.push("/login");
+      router.refresh();
+    } catch (err) {
+      console.error("Error logging out:", err);
+    }
   };
 
   const handleSaveSettings = async (newHysteresis) => {
