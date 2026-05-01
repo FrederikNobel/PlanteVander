@@ -8,6 +8,7 @@ import SettingsPanel from "../components/SettingsPanel";
 export default function Dashboard() {
   const [data, setData] = useState([]);
   const [currentMoisture, setCurrentMoisture] = useState(0);
+  const [savedHysteresis, setSavedHysteresis] = useState(40);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const router = useRouter();
@@ -17,13 +18,20 @@ export default function Dashboard() {
       try {
         const res = await fetch('/api/sheets');
         if (!res.ok) throw new Error('Failed to fetch data');
-        const sheetData = await res.json();
+        const jsonResponse = await res.json();
+        
+        // Nu forventer vi et objekt: { data: [...], hysteresis: 40 }
+        // Hvis jsonResponse er et array (fra det gamle script), falder vi tilbage til at håndtere det
+        const isArray = Array.isArray(jsonResponse);
+        const sheetData = isArray ? jsonResponse : jsonResponse.data;
+        const fetchedHysteresis = isArray ? 40 : (jsonResponse.hysteresis || 40);
         
         if (sheetData && sheetData.length > 0) {
           // Keep only the last 24 entries for the chart
           const recentData = sheetData.slice(-24);
           setData(recentData);
           setCurrentMoisture(recentData[recentData.length - 1].value);
+          setSavedHysteresis(fetchedHysteresis);
         } else {
           setError('No data found in the spreadsheet.');
         }
@@ -114,7 +122,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <SettingsPanel currentHysteresis={40} onSave={handleSaveSettings} />
+      <SettingsPanel currentHysteresis={savedHysteresis} onSave={handleSaveSettings} />
     </main>
   );
 }

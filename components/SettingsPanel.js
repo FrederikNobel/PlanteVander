@@ -1,11 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function SettingsPanel({ currentHysteresis, onSave }) {
   const [hysteresis, setHysteresis] = useState(currentHysteresis || 40);
   const [isSaving, setIsSaving] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
+
+  useEffect(() => {
+    if (currentHysteresis !== undefined) {
+      setHysteresis(currentHysteresis);
+    }
+  }, [currentHysteresis]);
 
   const handleSave = async () => {
     setIsSaving(true);
