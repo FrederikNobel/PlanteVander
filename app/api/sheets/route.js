@@ -24,3 +24,31 @@ export async function GET() {
     return NextResponse.json({ error: 'Failed to load data' }, { status: 500 });
   }
 }
+
+export async function POST(request) {
+  try {
+    const { hysteresis } = await request.json();
+    
+    // Append the hysteresis as a URL parameter to the App Script GET URL
+    const url = new URL(SCRIPT_URL);
+    url.searchParams.append('hysteresis', hysteresis);
+    
+    const response = await fetch(url.toString(), {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+      },
+      redirect: 'follow'
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update Google Sheets');
+    }
+
+    const data = await response.json();
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error('Error updating sheets data:', error);
+    return NextResponse.json({ error: 'Failed to update data' }, { status: 500 });
+  }
+}

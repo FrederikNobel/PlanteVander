@@ -48,8 +48,19 @@ export default function Dashboard() {
   };
 
   const handleSaveSettings = async (newHysteresis) => {
-    console.log("Saving hysteresis:", newHysteresis);
-    // Here we will call the API to write to Google Sheets
+    try {
+      const res = await fetch('/api/sheets', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ hysteresis: newHysteresis }),
+      });
+      if (!res.ok) throw new Error('Failed to save settings');
+    } catch (err) {
+      console.error("Error saving settings:", err);
+      alert("Der opstod en fejl ved forsøg på at gemme indstillingerne.");
+    }
   };
 
   if (isLoading) {
