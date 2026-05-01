@@ -110,13 +110,13 @@ export default function Dashboard() {
           <div style={{ 
             fontSize: "4rem", 
             fontWeight: "bold", 
-            color: currentMoisture < 40 ? "var(--danger-red)" : "var(--primary-green)",
-            textShadow: currentMoisture < 40 ? "0 0 20px rgba(248, 81, 73, 0.4)" : "0 0 20px rgba(46, 160, 67, 0.4)"
+            color: currentMoisture <= savedHysteresis ? "var(--danger-red)" : "var(--primary-green)",
+            textShadow: currentMoisture <= savedHysteresis ? "0 0 20px rgba(248, 81, 73, 0.4)" : "0 0 20px rgba(46, 160, 67, 0.4)"
           }}>
             {currentMoisture}%
           </div>
           <p style={{ marginTop: "16px", fontWeight: "500" }}>
-            {currentMoisture < 40 ? "Needs Watering soon!" : "Optimal conditions"}
+            {currentMoisture <= savedHysteresis ? "Needs Watering soon!" : "Optimal conditions"}
           </p>
         </div>
 
